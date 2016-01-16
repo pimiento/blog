@@ -1,0 +1,51 @@
+#+OPTIONS: toc:nil \n:nil num:nil
+
+* BPE
+  Сегодня задался задачей настроить отправку сообщений в блог из уютного *Emacs* и супер-удобного *Org-mode* в бложик на *Blogger*. Выбор пал на BPE, который умеет именно это: экспортировать org-документы в Blogger. Он конечно не умеет множество других вкусностей: показывать список сообщений, редактировать уже отправленные, но это пока не важно. Будет сильно неудобно, перееду на stand-alone блог.
+
+  Итак, сегодня я хочу рассказать как завести всю эту машинерию с *BPE*
+** Установка
+  BPE имеет в зависимостях несколько вещей:
+  1. Надо установить *googlecl*
+     #+BEGIN_SRC shell
+       sudo apt-get install googlecl
+     #+END_SRC
+  2. Надо установить *html-minify*
+     - [[https://rtcamp.com/tutorials/nodejs/node-js-npm-install-ubuntu/][Обновить /nodejs/ на Ubuntu]]:
+       #+BEGIN_SRC shell
+         apt-get install python-software-properties
+         apt-add-repository ppa:chris-lea/node.js
+         apt-get update
+         apt-get install nodejs
+       #+END_SRC
+     - Установить *html-minify*:
+       #+BEGIN_SRC shell
+         sudo npm -g install html-minify
+       #+END_SRC
+  3. Установить сам [[https://github.com/yuutayamada/bpe][*BPE*]]:
+     #+BEGIN_SRC elisp
+       (package-install 'bpe)
+     #+END_SRC
+** Настройка
+  #+BEGIN_SRC elisp
+    (require 'bpe)
+    (require 'htmlize nil 'noerror)
+    (setq bpe:account "yourmail@gmail.com")
+    (setq bpe:blog-name
+          ;; В моём случае это "Жизнь, как она интересна"
+          "Именно что заголовок вашего блога")
+    (define-key org-mode-map (kbd "C-c C-p") 'bpe:post-article)
+    (define-key org-mode-map (kbd "C-c C-i") 'bpe:insert-template)
+    (setq bpe:lang "ru_RU.UTF-8")
+  #+END_SRC
+** Запуск
+  Во время редактирования org-документа запустить /bpe:post-article/, в браузере попросят авторизовать приложение. После авторизации приложения в браузере надо нажать *Enter* в окошке bpe-post и сообщение будет отправлено.
+
+  *!* Сообщение попадёт в /черновики/, bpe.el вызывает /google blogger post/ с флагом /draft/.
+** Проблемы
+  Вообще, схема работы *BPE* такая:
+  - Сжать html в одну строчку с помощью *htmlminimize* утилиты
+  - Вызвать google blogger post -u "yourmail@gmail.com" --blog "Название блога" и другие всякие ключи
+
+  К сожалению, *htmlnotify* не умеет заменять переносы строк на пробелы. Поэтому приходится добавлять пробел в начало каждой строки.
+  Для обхода этой проблемы можно использовать *visual-line-mode*!

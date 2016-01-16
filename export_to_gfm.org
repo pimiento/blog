@@ -1,0 +1,154 @@
+#+OPTIONS: toc:nil
+
+* Учусь экспортировать org-mode в Markdown
+  Чтобы при экспорте поддерживались различные фичи Github Flavored маркдауна,
+  надо установить [[https://github.com/larstvei/ox-gfm][ox-gfm]] и экспортировать при помощи /org-gfm-export-as-markdown/.
+
+  Пример кода на *Racket*
+  #+BEGIN_SRC scheme :exports both
+    (define (add x y)
+      (+ x y))
+
+    (add 3 4)
+  #+END_SRC
+
+  #+RESULTS:
+  : 7
+
+  Пример кода на *OCaml*
+  #+BEGIN_SRC ocaml :exports both
+    let add x y = x + y;;
+    add 3 4;;
+  #+END_SRC
+
+  #+RESULTS:
+  : 7
+
+  Пример кода на *Java*
+  #+BEGIN_SRC java :classname HelloWorld :results output :exports both
+    public class HelloWorld {
+      public static void main(String args[]) {
+        String greeting = "Hello World!";
+        System.out.println(greeting);
+      }
+    }
+  #+END_SRC
+
+  #+RESULTS:
+  : Hello World!
+
+  Пример кода на *Scala*
+  #+BEGIN_SRC scala :results output :exports both
+    object HelloWorld {
+      def main(args: Array[String]) {
+        println("Hello, world!")
+      }
+    }
+  #+END_SRC
+
+  #+RESULTS:
+  : Hello, world!
+
+  Пример кода на *Python*
+  #+BEGIN_SRC python :results output :exports both
+    def greeting(message):
+        print(message)
+
+    greeting("Hello world!")
+  #+END_SRC
+
+  #+RESULTS:
+  : Hello world!
+
+  Пример кода на C (надо исправить заглавную C на маленькую c при экспорте!)
+  #+BEGIN_SRC C :results output :includes <stdio.h> :exports both
+    int main(void) {
+        char *greeting = "Hello World!";
+        printf("%s\n", greeting);
+        return 0;
+    }
+  #+END_SRC
+
+  #+RESULTS:
+  : Hello World!
+
+** Исходный код этой страницы в org-mode
+   #+BEGIN_SRC org :exports code
+     ,#+OPTIONS: toc:nil
+
+     ,* Учусь экспортировать org-mode в Markdown
+       Чтобы при экспорте поддерживались различные фичи Github Flavored маркдауна,
+       надо установить [[https://github.com/larstvei/ox-gfm][ox-gfm]] и экспортировать при помощи /org-gfm-export-as-markdown/.
+
+       Пример кода на *Racket*
+       ,#+BEGIN_SRC scheme :exports both
+         (define (add x y)
+           (+ x y))
+
+         (add 3 4)
+       ,#+END_SRC
+
+       ,#+RESULTS:
+       : 7
+
+       Пример кода на *OCaml*
+       ,#+BEGIN_SRC ocaml :exports both
+         let add x y = x + y;;
+         add 3 4;;
+       ,#+END_SRC
+
+       ,#+RESULTS:
+       : 7
+
+       Пример кода на *Java*
+       ,#+BEGIN_SRC java :classname HelloWorld :results output :exports both
+         public class HelloWorld {
+           public static void main(String args[]) {
+             String greeting = "Hello World!";
+             System.out.println(greeting);
+           }
+         }
+       ,#+END_SRC
+
+       ,#+RESULTS:
+       : Hello World!
+
+       Пример кода на *Scala*
+       ,#+BEGIN_SRC scala :results output :exports both
+         object HelloWorld {
+           def main(args: Array[String]) {
+             println("Hello, world!")
+           }
+         }
+       ,#+END_SRC
+
+       ,#+RESULTS:
+       : Hello, world!
+
+       Пример кода на *Python*
+       ,#+BEGIN_SRC python :results output :exports both
+         def greeting(message):
+             print(message)
+
+         greeting("Hello world!")
+       ,#+END_SRC
+
+       ,#+RESULTS:
+       : Hello world!
+
+       Пример кода на C
+       ,#+BEGIN_SRC C :results output :includes <stdio.h> :exports both
+         int main(void) {
+             char *greeting = "Hello World!";
+             printf("%s\n", greeting);
+             return 0;
+         }
+       ,#+END_SRC
+
+       ,#+RESULTS:
+       : Hello World!
+
+       ,#+BEGIN_SRC org :exports code
+         # here is org-mode source of that example!
+       ,#+END_SRC
+   #+END_SRC
