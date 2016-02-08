@@ -1,0 +1,63 @@
+#+OPTIONS: toc:nil ^:{} _:{}
+
+** Отличия hardlink от symlink
+   - hardlink :: жёсткая ссылка, по сути этот копия того же файла, на который она ссылается.
+   - symlink ::  мягкая ссылка, содержит путь до файла на который она ссылается.
+   - inode :: объект файловой системы, содержащий информацию о владельце файла, группе, правах доступа, размере, типе, времени модификации (/mtime/) и доступа к файлу (/atime/), времени модификации индексного дескриптора (/ctime/) и счётчик жёстких ссылок на файл. Каждый /inode/ имеет номер, присваиваемый ему файловой системой в момент её создания.
+   #+BEGIN_SRC sh :results output :exports both
+     ls -lih *.org
+   #+END_SRC
+
+   #+RESULTS:
+   #+begin_example
+   1700798 -rw-r--r-- 1 pimiento pimiento  19K февр.  8 14:30 c_structures.org
+   1657341 -rw-r--r-- 1 pimiento pimiento 7,8K янв.  30 12:16 decorators.org
+   1556139 -rw-r--r-- 1 pimiento pimiento 4,0K янв.  16 22:37 export_to_gfm.org
+   1656099 -rw-r--r-- 1 pimiento pimiento 2,2K янв.  16 22:33 pdftk_and_djvu.org
+    683609 -rw-r--r-- 1 pimiento pimiento 7,6K февр.  4 21:03 processes.org
+   1687699 -rw-r--r-- 1 pimiento pimiento 3,4K янв.  16 22:38 publish_to_blogger.org
+    588563 -rw-r--r-- 1 pimiento pimiento 2,9K февр.  4 13:15 python_coctions.org
+   1664005 -rw-r--r-- 1 pimiento pimiento  14K янв.  30 14:43 python_gc.org
+   1664043 -rw-r--r-- 1 pimiento pimiento 5,6K янв.  30 19:12 python_graphs.org
+   1616883 -rw-r--r-- 1 pimiento pimiento   29 февр.  6 13:56 python_logging.org
+    588256 -rw-r--r-- 1 pimiento pimiento 5,1K февр.  4 12:52 python_os.org
+   1700689 -rw-r--r-- 1 pimiento pimiento  950 февр.  8 15:03 unix_hardlink_symlink.org
+   1616560 -rw-r--r-- 1 pimiento pimiento 5,8K февр.  6 12:41 ип_валютный_контроль.org
+#+end_example
+
+   Первая колонка отображает номер /inode/. Далее указаны права доступа, счётчик /hardlink/-ов на этот файл и т.д.
+
+   Создадим, например, _жёсткую ссылку_ на один из файлов:
+   #+BEGIN_SRC sh :results output :exports both
+     ln unix_hardlink_symlink.org unix_hardlink_symlink.hardlink.org
+     ls -lih |grep 1700689
+   #+END_SRC
+
+   #+RESULTS:
+   : 1700689 -rw-r--r-- 2 pimiento pimiento 2,6K февр.  8 15:08 unix_hardlink_symlink.hardlink.org
+   : 1700689 -rw-r--r-- 2 pimiento pimiento 2,6K февр.  8 15:08 unix_hardlink_symlink.org
+   Таким образом счётчик ссылок показывает нам, что один и тот же файл хранится под двумя разными именами.
+
+   _Мягкая ссылка_ создаётся с помощью той же команды *ln*, но с ключом *-s*:
+   #+BEGIN_SRC sh :results output :exports both
+     ln -s unix_hardlink_symlink.org unix_hardlink_symlink.symlink.org
+     ls -lih |grep unix_hardlink_symlink
+   #+END_SRC
+
+   #+RESULTS:
+   : 1700689 -rw-r--r-- 2 pimiento pimiento 3,3K февр.  8 15:11 unix_hardlink_symlink.hardlink.org
+   : 1700689 -rw-r--r-- 2 pimiento pimiento 3,3K февр.  8 15:11 unix_hardlink_symlink.org
+   : 1599032 lrwxrwxrwx 1 pimiento pimiento   25 февр.  8 15:11 unix_hardlink_symlink.symlink.org -> unix_hardlink_symlink.org
+
+   Мы создали _новый объект файловой системы_, который указывает на уже существующий файл. В правах доступа появилось указание что новый объект файловой системы имеет тип *l* — /symbolic link/. Необходимо отметить, что inode-номера для оригинального файла и для symlink-а различаются, так как это два независимых файла для файловой системы.
+
+   /hardlink/ не может указывать на файл в другой ФС, так как /inode/ может принадлежать только одной ФС, /symlink/ — может.
+
+   При удалении /hardlink/-а файл будет существовать до тех пор, пока существует хотя бы один /hardlink/ на него, но может менять местоположение, если был удалён оригинальный фал и остался /hardlink/ на него в другом каталоге. При удалении же оригинального файла для /symlink/ — файл-ссылка просто станет нерабочей.
+
+   С помощью /hardlink/ нельзя создать ссылку на каталог, но можно с помощью /symlink/.
+
+   #+BEGIN_SRC sh :exports none :results none
+     rm -f unix_hardlink_symlink.symlink.org
+     rm -f unix_hardlink_symlink.hardlink.org
+   #+END_SRC
